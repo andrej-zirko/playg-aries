@@ -1,4 +1,7 @@
 #!/bin/bash
+cd $(dirname $0)/../../indy-tails-server/docker
+TAILS_URL=$(docker-compose logs | grep -E 'url=http://.*\.ngrok\.io' -o | tail -n 1 | sed "s/^url=//")
+cd -
 
 cd $(dirname $0)/../../aries-cloudagent-python/scripts
 
@@ -13,11 +16,13 @@ docker run --rm -ti --name "aries-cloudagent-runner.faber" --user root --network
  --genesis-url http://von_webserver_1:8000/genesis \
  --inbound-transport http 0.0.0.0 8001 \
  --outbound-transport http \
+ --tails-server-base-url $TAILS_URL \
  --admin 0.0.0.0 80 \
  --admin-insecure-mode \
+ --auto-provision \
  --endpoint http://aries-cloudagent-runner.faber:8001 \
  --invite-label "Faber invitation" \
- -l "Faber" 
+ -l "Faber"
 
 # trace https://github.com/hyperledger/aries-rfcs/tree/master/features/0034-message-tracing
 #  --trace \

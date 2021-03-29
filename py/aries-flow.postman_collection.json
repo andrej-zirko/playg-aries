@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "097aa42f-c270-4b25-ad37-3839f7348ad0",
+		"_postman_id": "edb4eb67-1785-4342-8482-cacae2ab9f73",
 		"name": "aries-flow",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -36,8 +36,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "schema",
@@ -68,20 +67,42 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "cred_def",
 			"item": [
 				{
 					"name": "[Issuer] /credential-definitions - Send a credDef to the ledger",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var date = new Date();",
+									"var time_milliseconds = date.getTime();",
+									"pm.environment.set(\"credDefTag\", \"PassportCredDef05121999-\" + time_milliseconds);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json();",
+									"pm.environment.set(\"credDefId\", response.credential_definition_id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"tag\": \"PassportCredDef05121999_a\",\n  \"schema_id\": \"JdRkpwWwCBqjfcrsjAH1GT:2:passport:1.0\",\n  \"support_revocation\": true\n}",
+							"raw": "{\n  \"tag\": \"{{credDefTag}}\",\n  \"schema_id\": \"JdRkpwWwCBqjfcrsjAH1GT:2:passport:1.0\",\n  \"support_revocation\": true\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -100,11 +121,10 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
-			"name": "0011-cred-revocation",
+			"name": "NO-LONGER-NEEDED-0011-cred-revocation",
 			"item": [
 				{
 					"name": "[Issuer] /revocation/create-registry",
@@ -112,7 +132,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "ff0ca0ae-12ff-4a8e-84bc-d834e3290c20",
 								"exec": [
 									"let response = pm.response.json();",
 									"pm.environment.set(\"agent1.revoc_reg_id\", response.result.revoc_reg_id);"
@@ -194,8 +213,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "0160-connection-protocol",
@@ -206,7 +224,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "5b391aa3-5a1a-4a9a-ba82-7529fdd730a7",
 								"exec": [
 									"let response = pm.response.json();",
 									"pm.environment.set(\"invitation\", JSON.stringify(response.invitation));",
@@ -219,6 +236,10 @@
 					"request": {
 						"method": "POST",
 						"header": [],
+						"body": {
+							"mode": "file",
+							"file": {}
+						},
 						"url": {
 							"raw": "{{issuer.baseUrl}}/connections/create-invitation",
 							"host": [
@@ -238,7 +259,6 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "acfb8d51-2309-4de5-928b-6d52973c16b9",
 								"exec": [
 									""
 								],
@@ -248,7 +268,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "22e6443a-2d89-4796-9043-a619b8502340",
 								"exec": [
 									"let response = pm.response.json();",
 									"pm.environment.set(\"agent2.connection_id\", response.connection_id);"
@@ -288,7 +307,6 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "d6b86448-cebc-4c16-ae19-ac1fde123d14",
 								"exec": [
 									""
 								],
@@ -334,7 +352,6 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "924d85d8-c8f3-4414-be60-5a9c10b604cb",
 								"exec": [
 									""
 								],
@@ -368,8 +385,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "0036-issue-credential",
@@ -380,7 +396,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "1f22e3b8-1fdc-46cd-9786-fdc14d01b1b7",
 								"exec": [
 									""
 								],
@@ -393,7 +408,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"comment\": \"Sample comment here!\",\n  \"trace\": false,\n  \"credential_preview\": {\n    \"@type\": \"did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/1.0/credential-preview\",\n    \"attributes\": [\n      {\n        \"name\": \"passportNumber\",\n        \"value\": \"123454321\"\n      },\n      {\n        \"name\": \"expirationDate\",\n        \"value\": \"2020-01-01\"\n      }\n    ]\n  },\n  \"auto_issue\": false,\n  \"cred_def_id\": \"JdRkpwWwCBqjfcrsjAH1GT:3:CL:8:PassportCredDef05121999_a\",\n  \"connection_id\": \"{{agent1.connection_id}}\",\n  \"auto_remove\": false\n}",
+							"raw": "{\n  \"comment\": \"Sample comment here!\",\n  \"trace\": false,\n  \"credential_preview\": {\n    \"@type\": \"did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/1.0/credential-preview\",\n    \"attributes\": [\n      {\n        \"name\": \"passportNumber\",\n        \"value\": \"123454321\"\n      },\n      {\n        \"name\": \"expirationDate\",\n        \"value\": \"2020-01-01\"\n      }\n    ]\n  },\n  \"auto_issue\": false,\n  \"cred_def_id\": \"{{credDefId}}\",\n  \"connection_id\": \"{{agent1.connection_id}}\",\n  \"auto_remove\": false\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -419,7 +434,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "a54d16b5-73c1-4eb0-afad-d1a42880a4a4",
 								"exec": [
 									"const response = pm.response.json();",
 									"const agent2ConnectionId = pm.environment.get(\"agent1.connection_id\");",
@@ -453,7 +467,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "16c8e531-0267-4569-aa80-9cfb85a9124e",
 								"exec": [
 									"const response = pm.response.json();",
 									"const agent2ConnectionId = pm.environment.get(\"agent2.connection_id\");",
@@ -487,7 +500,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "9e064f4b-3060-46b7-957d-9e2de27c38bf",
 								"exec": [
 									""
 								],
@@ -528,7 +540,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "8b693da6-2e36-45ec-b253-e2befc8b8b56",
 								"exec": [
 									"// \"credential_exchange_id\": \"9503e3ea-3b82-4b0a-80df-bb7bb841e4ad\","
 								],
@@ -569,7 +580,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "7bc5da42-8d3e-44e8-af67-4f0fd900d83e",
 								"exec": [
 									""
 								],
@@ -636,8 +646,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "0037-present-proof",
@@ -648,7 +657,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "b8646b8d-27fe-41bf-8d69-4625ddbdd0e8",
 								"exec": [
 									"const response = pm.response.json();",
 									"pm.environment.set(\"agent1.presentation_exchange_id\", response.presentation_exchange_id);"
@@ -659,7 +667,6 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "b63138ad-2112-41df-b9e5-46540a703c18",
 								"exec": [
 									"",
 									"    // \"non_revoked\": {",
@@ -676,7 +683,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"connection_id\": \"{{agent1.connection_id}}\",\n  \"comment\": \"This is a comment about the reason for the proof\",\n  \"proof_request\": {\n    \"name\": \"Proof of Passport\",\n    \"version\": \"1.0\",\n    \"requested_attributes\": {\n      \"0_name_uuid\": {\n        \"name\": \"passportNumber\",\n        \"restrictions\": [\n          {\n            \"cred_def_id\": \"JdRkpwWwCBqjfcrsjAH1GT:3:CL:8:PassportCredDef05121999_a\"\n          }\n        ]\n      },\n      \"0_date_uuid\": {\n        \"name\": \"expirationDate\",\n        \"restrictions\": [\n          {\n            \"cred_def_id\": \"JdRkpwWwCBqjfcrsjAH1GT:3:CL:8:PassportCredDef05121999_a\"\n          }\n        ]\n      }\n    },\n    \"requested_predicates\": {}\n  }\n}",
+							"raw": "{\n  \"connection_id\": \"{{agent1.connection_id}}\",\n  \"comment\": \"This is a comment about the reason for the proof\",\n  \"proof_request\": {\n    \"name\": \"Proof of Passport\",\n    \"version\": \"1.0\",\n    \"requested_attributes\": {\n      \"0_name_uuid\": {\n        \"name\": \"passportNumber\",\n        \"restrictions\": [\n          {\n            \"cred_def_id\": \"{{credDefId}}\"\n          }\n        ]\n      },\n      \"0_date_uuid\": {\n        \"name\": \"expirationDate\",\n        \"restrictions\": [\n          {\n            \"cred_def_id\": \"{{credDefId}}\"\n          }\n        ]\n      }\n    },\n    \"requested_predicates\": {}\n  }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -702,7 +709,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "f8c8b521-03f7-4f7a-aad7-03f600bf12bb",
 								"exec": [
 									"const response = pm.response.json();",
 									"const agent2ConnectionId = pm.environment.get(\"agent2.connection_id\");",
@@ -737,12 +743,12 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "3fb1d3e6-387c-46e2-b6ad-68de863594ca",
 								"exec": [
 									"const response = pm.response.json();",
 									"// const agent2ConnectionId = pm.environment.get(\"agent2.connection_id\");",
+									"const credDefId = pm.environment.get(\"credDefId\");",
 									"",
-									"const record = response.results.find(result => result.cred_def_id === 'JdRkpwWwCBqjfcrsjAH1GT:3:CL:8:PassportCredDef05121999_a');",
+									"const record = response.results.find(result => result.cred_def_id === credDefId);",
 									"pm.environment.set(\"agent2.cred_id\", record.referent);"
 								],
 								"type": "text/javascript"
@@ -770,7 +776,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "c3ec5d48-10b4-45d5-aefa-aba81c17fb9b",
 								"exec": [
 									""
 								],
@@ -811,7 +816,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "e5e4172a-eb9e-4d98-b7e1-17b7c69f3122",
 								"exec": [
 									"const response = pm.response.json();",
 									"console.log(\"verified:\"+ response.verified)"
@@ -844,7 +848,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "f40eb53b-bc7a-4fab-adf9-e6e688918c9b",
 								"exec": [
 									"const response = pm.response.json();",
 									"console.log(\"verified:\"+ response.verified)"
@@ -870,8 +873,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "DID",
@@ -922,9 +924,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }
