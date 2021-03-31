@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "edb4eb67-1785-4342-8482-cacae2ab9f73",
+		"_postman_id": "f0a0967f-e7ac-42b6-a6c5-33a91937a2af",
 		"name": "aries-flow",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -378,6 +378,156 @@
 							],
 							"path": [
 								"connections",
+								"{{agent1.connection_id}}",
+								"accept-request"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "0023-did-exchange",
+			"item": [
+				{
+					"name": "[Issuer] /out-of-band/create-invitation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response = pm.response.json();",
+									"pm.environment.set(\"invitation\", JSON.stringify(response.invitation));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"handshake_protocols\": [\n    \"did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/didexchange/1.0\"\n  ],\n  \"use_public_did\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{issuer.baseUrl}}/out-of-band/create-invitation",
+							"host": [
+								"{{issuer.baseUrl}}"
+							],
+							"path": [
+								"out-of-band",
+								"create-invitation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Prover] /out-of-band/receive-invitation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response = pm.response.json();",
+									"pm.environment.set(\"agent2.connection_id\", response.connection_id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{invitation}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{prover.baseUrl}}/out-of-band/receive-invitation",
+							"host": [
+								"{{prover.baseUrl}}"
+							],
+							"path": [
+								"out-of-band",
+								"receive-invitation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Prover] /didexchange/{conn_id}/accept-invitation",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{prover.baseUrl}}/didexchange/{{agent2.connection_id}}/accept-invitation",
+							"host": [
+								"{{prover.baseUrl}}"
+							],
+							"path": [
+								"didexchange",
+								"{{agent2.connection_id}}",
+								"accept-invitation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Issuer] /connections",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response = pm.response.json();",
+									"pm.environment.set(\"agent1.connection_id\", response.results[0].connection_id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{issuer.baseUrl}}/connections",
+							"host": [
+								"{{issuer.baseUrl}}"
+							],
+							"path": [
+								"connections"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Issuer] /didexchange/{conn_id}/accept-request",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{issuer.baseUrl}}/didexchange/{{agent1.connection_id}}/accept-request",
+							"host": [
+								"{{issuer.baseUrl}}"
+							],
+							"path": [
+								"didexchange",
 								"{{agent1.connection_id}}",
 								"accept-request"
 							]
@@ -925,6 +1075,36 @@
 					"response": []
 				}
 			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "issuer.baseUrl",
+			"value": "http://localhost:8081"
+		},
+		{
+			"key": "prover.baseUrl",
+			"value": "http://localhost:8082"
 		}
 	]
 }
